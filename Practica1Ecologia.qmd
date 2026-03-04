@@ -1,0 +1,272 @@
+---
+title: "Práctica 1: Dinámicas para una población no estructurada por edad"
+format: 
+  revealjs:
+    footer: "Dinámicas para una población no estructurada por edad"
+    transition: slide
+    smaller: true
+    scrollable: true
+---
+
+## 
+
+1.  Una población tiene inicialmente 20 individuos y crece independientemente de su densidad durante 5 unidades de tiempo, pasando a estar integrada por 500 individuos. ¿Cuál será la diferencia entre las tasas de natalidad y mortalidad per cápita y por unidad de tiempo?
+
+```{r echo=TRUE}
+# Parámetros
+N0 <- 20
+Nt <- 500
+t_final <- 5
+
+# Calcular r
+r <- log(Nt / N0) / t_final
+r
+```
+
+::: {.callout-tip title="Modelo exponencial"}
+$N(t)=N_{0}e^{rt}$
+:::
+
+## 
+
+```{r echo=TRUE, fig.align='center', fig.height=6}
+# Secuencia temporal
+t <- seq(0, t_final, by = 0.1)
+# Modelo exponencial
+N <- N0 * exp(r * t)
+# Gráfico
+plot(t, N, type = "l", lwd = 2,
+     xlab = "Tiempo",
+     ylab = "Tamaño poblacional",
+     main = "Crecimiento exponencial (densidad-independiente)")
+
+```
+
+## 
+2. Una población tiene inicialmente 1 millón de individuos de los cuales 20 están enfermos. Suponiendo que la enfermedad es contagiosa, que se extiende exponencialmente y que tras 5 semanas hay 500 individuos enfermos, determina el número de contagios per cápita y por unidad de tiempo 
+```{r echo=TRUE}
+# Parámetros
+N0 <- 20
+Nt <- 500
+t_final <- 5
+```
+
+## 
+```{r echo=TRUE, fig.align='center'}
+# Secuencia temporal
+t <- seq(0, t_final, by = 0.1)
+# Modelo exponencial
+N <- N0 * exp(r * t)
+# Gráfico
+plot(t, N, type = "l", lwd = 2,
+     xlab = "Tiempo",
+     ylab = "Tamaño poblacional",
+     main = "Crecimiento exponencial (densidad-independiente)")
+```
+
+
+##
+3.Obtén en una misma pantalla los gráficos de tamaño poblacional frente al tiempo para los siguientes valores de tasas intrínsecas de crecimiento: r = 0 i/(it); r = 0.1 i/(it) y r = -0.1 i/(it), siendo el tamaño inicial de la población 100 individuos y el período de crecimiento 20 unidades de tiempo. Indica para qué valores de “r” la población es creciente y para que valores es decreciente.
+
+```{r echo=TRUE, fig.align='center'}
+# Parámetros
+N0 <- 100
+t_final = 20
+tiempo <- seq(0, t_final, by = 0.1)
+
+r_vals <- c(0.1, 0, -0.1)
+
+# Crear matriz para almacenar resultados
+N <- sapply(r_vals, function(r) N0 * exp(r * tiempo))
+head(N)
+```
+## 
+```{r echo=TRUE, fig.align='center'}
+# Graficar
+matplot(tiempo, N, type = "l", lwd = 2, lty = 1,
+        xlab = "Tiempo",
+        ylab = "Tamaño poblacional",
+        main = "Crecimiento exponencial para distintos valores de r")
+
+legend("topleft",
+       legend = c("r = 0.1", "r = 0", "r = -0.1"),
+       col = 1:3,
+       lwd = 2)
+```
+
+
+##
+4. Para hacerte una idea de la enorme capacidad de crecimiento de una población cuando no se ve limitado por la densidad, calcula cuantos individuos habrá al cabo de 20 generaciones si se parte de 2 individuos y se sabe que el crecimiento por generación achacable a cada individuo es de 1.5 individuos. 
+```{r echo=TRUE}
+# Parámetros
+N0 <- 2
+r <- 1.5
+t_final <- 20
+# Secuencia temporal
+t <- seq(0, t_final, by = 0.1)
+# Modelo exponencial
+N <- N0 * exp(r * t)
+
+```
+
+## 
+```{r}
+# Gráfico
+plot(t, N, type = "l", lwd = 2,
+     xlab = "Tiempo",
+     ylab = "Tamaño poblacional",
+     main = "Crecimiento exponencial (densidad-independiente)")
+```
+
+
+
+##
+5. Obtén el gráfico que describe el crecimiento discreto a lo largo de cuatro generaciones de una población que inicialmente contiene 50 individuos y en la que de una generación a otra aumenta un 50% el número de individuos ¿Cómo podría representarse la curva de crecimiento para ser más realista? 
+
+```{r}
+# Parámetros
+N0 <- 50
+lambda <- 1.5   # factor de crecimiento (50% más cada generación)
+generaciones <- 0:4
+
+# Modelo discreto
+N <- N0 * lambda^generaciones
+
+# Gráfico discreto
+plot(generaciones, N,
+     type = "b",        # puntos + líneas
+     pch = 19,
+     lwd = 2,
+     xlab = "Generación",
+     ylab = "Tamaño poblacional",
+     main = "Crecimiento discreto (50% por generación)")
+```
+##
+6. Obtén en un mismo gráfico las tres curvas de crecimiento discreto independiente de la densidad, al cabo de 20 generaciones, para valores de la tasa de crecimiento discreto de la población 1.1; 1.0 y 0.9, y un tamaño inicial de la población de 100 i. Establece el rango de valores de la tasa de crecimiento discreto de la población para los que la población es creciente o decreciente
+
+```{r}
+# Parámetros
+N0 <- 100
+t_final = 20
+tiempo <- seq(0, t_final, by = 1)
+
+lambda_vals <- c(1.1, 1.0, 0.9)
+
+# Crear matriz para almacenar resultados
+N <- sapply(lambda_vals, function(lambda) N <- N0 * lambda^tiempo)
+
+# Graficar
+matplot(tiempo, N, type = "l", lwd = 2, lty = 1,
+        xlab = "Tiempo",
+        ylab = "Tamaño poblacional",
+        main = "Crecimiento discreto independiente de densidad con distintos valores de lambda")
+
+legend("topleft",
+       legend = c(expression(lambda==1.1),
+                  expression(lambda==1.0),
+                  expression(lambda==0.9)),
+       col = 1:3,
+       lwd = 2)
+```
+##
+
+7. Representa en un mismo gráfico el crecimiento de tres poblaciones durante 100 generaciones. Considera un tamaño inicial de 10 i, en un ambiente con capacidad de carga de 500 i, y unas tasas intrínsecas de crecimiento de 0.1; 0.4 y 1.5 i/(t i) ¿Qué conclusión general puedes sacar?
+```{r}
+# Parámetros
+N0 <- 10
+K <- 500
+r_vals <- c(0.1, 0.4, 1.5)
+generaciones <- 0:100
+
+# Función logística discreta
+logistico <- function(r) {
+  N <- numeric(length(generaciones))
+  N[1] <- N0
+  
+  for (t in 1:(length(generaciones) - 1)) {
+    N[t+1] <- N[t] + r * N[t] * (1 - N[t] / K)
+  }
+  
+  return(N)
+}
+
+# Calcular las tres poblaciones
+N_mat <- sapply(r_vals, logistico)
+
+# Graficar
+matplot(generaciones, N_mat,
+        type = "l",
+        lwd = 2,
+        lty = 1,
+        col = 1:3,
+        xlab = "Generación",
+        ylab = "Tamaño poblacional",
+        main = "Modelo logístico discreto (K = 500)")
+
+abline(h = K, lty = 2)  # línea de capacidad de carga
+
+legend("bottomright",
+       legend = c("r = 0.1", "r = 0.4", "r = 1.5"),
+       col = 1:3,
+       lwd = 2)
+```
+##
+8. En un hábitat con capacidad de carga de 300 i, ¿Cuántos individuos tendrá una población al cabo de 10 generaciones si su tasa intrínseca de crecimiento es 0.4 i/(it) y su tamaño inicial de 10 i? ¿Cuánto tiempo será necesario para alcanzar el punto de inflexión de la curva? ¿Qué representa el punto de inflexión? 
+
+```{r}
+# Parámetros
+K <- 300
+r <- 0.4
+N0 <- 10
+generaciones <- 0:10
+
+# Vector para almacenar resultados
+N <- numeric(length(generaciones))
+N[1] <- N0
+
+# Iteración del modelo logístico discreto
+for (t in 1:(length(generaciones) - 1)) {
+  N[t+1] <- N[t] + r * N[t] * (1 - N[t] / K)
+}
+
+# Mostrar tamaño tras 10 generaciones
+N[11]
+
+# Gráfico
+plot(generaciones, N,
+     type = "b",
+     pch = 19,
+     lwd = 2,
+     xlab = "Generación",
+     ylab = "Tamaño poblacional",
+     main = "Crecimiento logístico discreto")
+
+abline(h = K, lty = 2)
+```
+
+```{r}
+which(N >= 150)[1] - 1
+```
+##
+9. En la población anterior, se considera que la población ha alcanzado su capacidad de carga cuando llega a 290 individuos. El tiempo necesario para llegar a ese valor se le denomina “tiempo de retorno” y es el tiempo necesario para que se recupere el tamaño de una población después de una perturbación. Calcula el tiempo de retorno para las tres tasas intrínsecas de crecimiento per cápita indicadas en la tabla.
+
+Tasa intrínseca de crecimiento (i/it) Tiempo de retorno (t)
+
+0.2
+
+0.4
+
+0.8
+
+Cuando la tasa intrínseca de crecimiento se duplica. ¿Se reduce el tiempo de retorno a la mitad?
+
+
+```{r}
+# Parámetros
+K <- 300
+N0 <- 10
+N_return <- 290
+r_vals <- c(0.2, 0.4, 0.8)
+
+```
+
