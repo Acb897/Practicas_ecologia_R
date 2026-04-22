@@ -1,0 +1,65 @@
+---
+title: "Práctica 2: Dinámica para una población estructurada por edades"
+format: 
+  revealjs:
+    footer: "Dinámicas para una población estructurada por edades"
+    transition: slide
+    smaller: true
+    scrollable: true
+---
+
+## 
+
+1.  En una población estructurada, se sabe que cada una de sus cohortes evoluciona según la siguiente tabla de vida ($l_x$, tasa de supervivencia hasta el tiempo $x$, y $m_x$, tasa reproductiva en tiempo x):
+
+|  x  | $l_x$ | $m_x(= b_x)$ |
+|:---:|:-----:|:------------:|
+|  0  |   1   |      0       |
+|  1  |  0.6  |     1.2      |
+|  2  |  0.3  |     2.9      |
+|  3  |  0.1  |     0.4      |
+|  4  |   0   |      0       |
+
+Considerando esa información y también que el tamaño inicial de la primera cohorte es de 100 individuos, y que los nacimientos entre los tiempos x-1 y x se producen de forma sincronizada en x y justo antes de hacer el censo poblacional:
+
+a)  Completa la siguiente tabla sobre la dinámica poblacional con el número de individuos que corresponden a distintas clases etarias en distintos momentos:
+
++------------+--------------------+--------------------+--------------------+
+|            | Población en $x=0$ | Población en $x=1$ | Población en $x=2$ |
+|            |                    |                    |                    |
+|            | \(S\)              | \(S\)              | \(S\)              |
++============+====================+====================+====================+
+| **CE0**    | 100                |                    |                    |
++------------+--------------------+--------------------+--------------------+
+| **CE1**    | 0                  |                    |                    |
++------------+--------------------+--------------------+--------------------+
+| **CE2**    | 0                  |                    |                    |
++------------+--------------------+--------------------+--------------------+
+| **CE3**    | 0                  |                    |                    |
++------------+--------------------+--------------------+--------------------+
+| **N**      | 100                |                    |                    |
++------------+--------------------+--------------------+--------------------+
+
+b) determina gráficamente la proporción de individuos de cada clase etaria que existen en la población cuando, pasado suficiente tiempo, se estabilizan esas proporciones
+
+c) cuando la distribución de edades se estabiliza, ¿el tamaño de la población disminuye, aumenta o permanece constante con el tiempo? (responde analizando la curva N vs t)
+
+d) ¿cuál es el número de individuos producido por cada individuo en una cohorte a lo largo de toda su vida?
+
+e) ¿Corrobora la tasa calculada en d) la respuesta a la pregunta c)?
+
+f) ¿Cuál será la edad media a la que un individuo tiene descendencia?
+
+g) si se cambian los valores de las tasas reproducvitvas específicas de edad de la tabla inicial por: $m_1=0.4$, $m_2 = 1.2$ y $m_3 = 2.9$, ¿cuál será ahora el valor de la tasa calculada en d)?
+
+h) Hay dos maneras de estimar la tasa de crecimiento ($r$) de una población a partir de la información contenida en una tabla de vida. El primero consiste en utilizar la ecuación de Euler-Lotka:
+PONER ECUACIÓN
+1   e-rx lx mx  
+
+que da un valor exacto de r por aproximaciones sucesivas. El segundo método, más sencillo pero menos preciso, implica estimar r como: 
+
+r  ln (R0/G) 
+
+Calcula de ambas formas la tasa de crecimiento poblacional. 
+
+Nota: G=Tc (tiempo de generación de una cohorte) 
