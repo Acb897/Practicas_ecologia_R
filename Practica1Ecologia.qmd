@@ -8,12 +8,36 @@ format:
     scrollable: true
 ---
 
-##
+## Objetivo de la práctica
+
+En esta práctica vamos a estudiar cómo cambia el tamaño de una población con el tiempo.
+
+Usaremos tres ideas básicas:
+
+-   **Crecimiento exponencial**: la población crece sin límite.
+-   **Crecimiento discreto**: la población cambia generación a generación.
+-   **Crecimiento logístico**: la población crece, pero existe una **capacidad de carga**.
+
+No es necesario saber programar, aprenderemos en clase poco a poco. En cada ejercicio solo hay que fijarse en:
+
+-   los **datos de partida**,
+-   la **fórmula** que se usa,
+-   y cómo **interpretar el resultado**.
+
+## 
 
 1.  Una población tiene inicialmente 20 individuos y crece independientemente de su densidad durante 5 unidades de tiempo, pasando a estar integrada por 500 individuos. ¿Cuál será la diferencia entre las tasas de natalidad y mortalidad per cápita y por unidad de tiempo?
 
+::: {.callout-tip title="Modelo exponencial"}
+$N(t)=N_0 e^{rt}$
+:::
+
+Si despejamos $r$:
+
+$r=\frac{\ln(\frac{N_t}{N_0})}{t}$
+
 ```{r echo=TRUE}
-# Parámetros
+# Datos del problema
 N0 <- 20
 Nt <- 500
 t_final <- 5
@@ -23,14 +47,10 @@ r <- log(Nt / N0) / t_final
 r
 ```
 
-::: {.callout-tip title="Modelo exponencial"}
-$N(t)=N_{0}e^{rt}$
-:::
-
 ## 
 
 ```{r echo=TRUE, fig.align='center', fig.height=6}
-# Secuencia temporal
+# Secuencia temporal para curvas suaves
 t <- seq(0, t_final, by = 0.1)
 # Modelo exponencial
 N <- N0 * exp(r * t)
@@ -38,57 +58,37 @@ N <- N0 * exp(r * t)
 plot(t, N, type = "l", lwd = 2,
      xlab = "Tiempo",
      ylab = "Tamaño poblacional",
-     main = "Crecimiento exponencial (densidad-independiente)")
+     main = "Crecimiento exponencial")
 
 ```
 
 ## 
 
-2.  Una población tiene inicialmente 1 millón de individuos de los cuales 20 están enfermos. Suponiendo que la enfermedad es contagiosa, que se extiende exponencialmente y que tras 5 semanas hay 500 individuos enfermos, determina el número de contagios per cápita y por unidad de tiempo
-
-```{r echo=TRUE}
-# Parámetros
-N0 <- 20
-Nt <- 500
-t_final <- 5
-```
-
-## 
-
-```{r echo=TRUE, fig.align='center'}
-# Secuencia temporal
-t <- seq(0, t_final, by = 0.1)
-# Modelo exponencial
-N <- N0 * exp(r * t)
-# Gráfico
-plot(t, N, type = "l", lwd = 2,
-     xlab = "Tiempo",
-     ylab = "Tamaño poblacional",
-     main = "Crecimiento exponencial (densidad-independiente)")
-```
+2.  Una población tiene inicialmente 1 millón de individuos de los cuales 50 están enfermos. Suponiendo que la enfermedad es contagiosa, que se extiende exponencialmente y que tras 3 semanas hay 600 individuos enfermos, determina el número de contagios per cápita y por unidad de tiempo
 
 ## 
 
 3.Obtén en una misma pantalla los gráficos de tamaño poblacional frente al tiempo para los siguientes valores de tasas intrínsecas de crecimiento: r = 0 i/(it); r = 0.1 i/(it) y r = -0.1 i/(it), siendo el tamaño inicial de la población 100 individuos y el período de crecimiento 20 unidades de tiempo. Indica para qué valores de “r” la población es creciente y para que valores es decreciente.
 
 ```{r echo=TRUE, fig.align='center'}
-# Parámetros
+# Datos del problema
 N0 <- 100
 t_final = 20
-tiempo <- seq(0, t_final, by = 0.1)
+t <- seq(0, t_final, by = 0.1)
 
 r_vals <- c(0.1, 0, -0.1)
 
 # Crear matriz para almacenar resultados
-N <- sapply(r_vals, function(r) N0 * exp(r * tiempo))
+N <- sapply(r_vals, function(r) N0 * exp(r * t))
 head(N)
 ```
 
 ## 
 
 ```{r echo=TRUE, fig.align='center'}
-# Graficar
-matplot(tiempo, N, type = "l", lwd = 2, lty = 1,
+# Gráfico
+matplot(t, N, type = "l", lwd = 2, lty = 1,
+        col = 1:3,
         xlab = "Tiempo",
         ylab = "Tamaño poblacional",
         main = "Crecimiento exponencial para distintos valores de r")
@@ -104,11 +104,11 @@ legend("topleft",
 4.  Para hacerte una idea de la enorme capacidad de crecimiento de una población cuando no se ve limitado por la densidad, calcula cuantos individuos habrá al cabo de 20 generaciones si se parte de 2 individuos y se sabe que el crecimiento por generación achacable a cada individuo es de 1.5 individuos.
 
 ```{r echo=TRUE}
-# Parámetros
+# Datos del problema
 N0 <- 2
 r <- 1.5
 t_final <- 20
-# Secuencia temporal
+# Secuencia temporal para curvas suaves
 t <- seq(0, t_final, by = 0.1)
 # Modelo exponencial
 N <- N0 * exp(r * t)
@@ -117,7 +117,7 @@ N <- N0 * exp(r * t)
 
 ## 
 
-```{r}
+```{r echo=TRUE, fig.align='center'}
 # Gráfico
 plot(t, N, type = "l", lwd = 2,
      xlab = "Tiempo",
@@ -130,9 +130,9 @@ plot(t, N, type = "l", lwd = 2,
 5.  Obtén el gráfico que describe el crecimiento discreto a lo largo de cuatro generaciones de una población que inicialmente contiene 50 individuos y en la que de una generación a otra aumenta un 50% el número de individuos ¿Cómo podría representarse la curva de crecimiento para ser más realista?
 
 ```{r echo=TRUE}
-# Parámetros
+# Datos del problema
 N0 <- 50
-lambda <- 1.5   # factor de crecimiento (50% más cada generación)
+lambda <- 1.5
 generaciones <- 0:4
 
 # Modelo discreto
@@ -146,8 +146,8 @@ $N(t)=N_{0}\lambda^{t}$
 
 ## 
 
-```{r echo=TRUE}
-# Gráfico discreto
+```{r echo=TRUE, fig.align='center'}
+# Gráfico
 plot(generaciones, N,
      type = "b",        # puntos + líneas
      pch = 19,
@@ -162,23 +162,24 @@ plot(generaciones, N,
 6.  Obtén en un mismo gráfico las tres curvas de crecimiento discreto independiente de la densidad, al cabo de 20 generaciones, para valores de la tasa de crecimiento discreto de la población 1.1; 1.0 y 0.9, y un tamaño inicial de la población de 100 individuos. Establece el rango de valores de la tasa de crecimiento discreto de la población para los que la población es creciente o decreciente
 
 ```{r echo=TRUE}
-# Parámetros
+# Datos del problema
 N0 <- 100
 t_final = 20
-tiempo <- seq(0, t_final, by = 1)
+# Secuencia temporal para curvas suaves
+t <- seq(0, t_final, by = 1)
 
 lambda_vals <- c(1.1, 1.0, 0.9)
 
 # Crear matriz para almacenar resultados
-N <- sapply(lambda_vals, function(lambda) N <- N0 * lambda^tiempo)
+N <- sapply(lambda_vals, function(lambda) N <- N0 * lambda^t)
 head(N)
 ```
 
 ## 
 
-```{r echo=TRUE}
-# Graficar
-matplot(tiempo, N, type = "l", lwd = 2, lty = 1,
+```{r echo=TRUE, fig.align='center'}
+# Gráfico
+matplot(t, N, type = "l", lwd = 2, lty = 1,
         xlab = "Tiempo",
         ylab = "Tamaño poblacional",
         main = "Crecimiento discreto independiente de densidad con distintos valores de lambda")
@@ -196,95 +197,84 @@ legend("topleft",
 7.  Representa en un mismo gráfico el crecimiento de tres poblaciones durante 100 generaciones. Considera un tamaño inicial de 10 i, en un ambiente con capacidad de carga de 500 i, y unas tasas intrínsecas de crecimiento de 0.1; 0.4 y 1.5 i/(t i) ¿Qué conclusión general puedes sacar?
 
 ```{r echo=TRUE}
-# Parámetros
+# Datos del problema
 N0 <- 10
 K <- 500
 r_vals <- c(0.1, 0.4, 1.5)
-generaciones <- 0:100
+# Secuencia temporal para curvas suaves
+tiempo <- seq(0, 100, by = 0.1)
 
-# Función logística discreta
-logistico <- function(r) {
-  N <- numeric(length(generaciones))
-  N[1] <- N0
-  
-  for (t in 1:(length(generaciones) - 1)) {
-    N[t+1] <- N[t] + r * N[t] * (1 - N[t] / K)
-  }
-  
-  return(N)
+# Función del modelo logístico continuo
+logistico_continuo <- function(t, N0, K, r) {
+  K / (1 + ((K - N0) / N0) * exp(-r * t))
 }
 
-# Calcular las tres poblaciones
-N_mat <- sapply(r_vals, logistico)
+
+# Calcular una curva para cada valor de r
+N_mat <- sapply(r_vals, function(r) {
+  logistico_continuo(tiempo, N0, K, r)
+})
 ```
 
-::: {.callout-tip title="Modelo logístico discreto"}
-$N_{(t+1)}=N_t+rN_t(1-\frac{N_t}{K})$
+::: {.callout-tip title="Modelo logístico contínuo"}
+$N_t=\frac{K}{1+(\frac{K-N_0}{N_0})e^{rt}}$
 :::
 
 ## 
 
 ```{r echo=TRUE, fig.align='center'}
-
-# Graficar
-matplot(generaciones, N_mat,
+# Gráfico
+matplot(tiempo, N_mat,
         type = "l",
         lwd = 2,
         lty = 1,
         col = 1:3,
-        xlab = "Generación",
+        xlab = "Tiempo",
         ylab = "Tamaño poblacional",
-        main = "Modelo logístico discreto (K = 500)")
+        main = "Modelo logístico continuo")
 
-abline(h = K, lty = 2)  # línea de capacidad de carga
+abline(h = K, lty = 2)
 
 legend("bottomright",
        legend = c("r = 0.1", "r = 0.4", "r = 1.5"),
        col = 1:3,
        lwd = 2)
-
 ```
 
 ## 
 
-8.  En un hábitat con capacidad de carga de 300 i, ¿Cuántos individuos tendrá una población al cabo de 10 generaciones si su tasa intrínseca de crecimiento es 0.4 i/(it) y su tamaño inicial de 10 i? ¿Cuánto tiempo será necesario para alcanzar el punto de inflexión de la curva? ¿Qué representa el punto de inflexión?
+8.  En un hábitat con capacidad de carga de 300 i, ¿Cuántos individuos tendrá una población al cabo de 30 generaciones si su tasa intrínseca de crecimiento es 0.4 i/(it) y su tamaño inicial de 10 i? ¿Cuánto tiempo será necesario para alcanzar el punto de inflexión de la curva? ¿Qué representa el punto de inflexión?
 
 ```{r echo=TRUE}
-# Parámetros
+# Datos del problema
 K <- 300
 r <- 0.4
 N0 <- 10
-generaciones <- 0:10
+t <- 30
+# Secuencia temporal para curvas suaves
+t <- seq(0, t, by = 0.1)
 
-# Vector para almacenar resultados
-N <- numeric(length(generaciones))
-N[1] <- N0
+# Modelo logístico continuo
+N <- K / (1 + ((K - N0) / N0) * exp(-r * t))
 
-# Iteración del modelo logístico discreto
-for (t in 1:(length(generaciones) - 1)) {
-  N[t+1] <- N[t] + r * N[t] * (1 - N[t] / K)
-}
-
-# Mostrar tamaño tras 10 generaciones
-N[11]
+# Tamaño poblacional en t = 30
+N_10 <- K / (1 + ((K - N0) / N0) * exp(-r * 30))
+N_10
 
 ```
 
 ## 
 
-```{r echo=TRUE}
+```{r echo=TRUE, fig.align='center'}
 
 # Gráfico
-plot(generaciones, N,
-     type = "b",
-     pch = 19,
-     lwd = 2,
-     xlab = "Generación",
+plot(t, N, type = "l", lwd = 2,
+     xlab = "Tiempo",
      ylab = "Tamaño poblacional",
-     main = "Crecimiento logístico discreto")
+     main = "Crecimiento logístico continuo")
 
-abline(h = K, lty = 2)
-which(N >= 150)[1] - 1
+abline(h = K, lty = 2)     # capacidad de carga
+abline(h = K/2, lty = 3)   # punto de inflexión
 ```
 
 ## 
@@ -300,37 +290,93 @@ which(N >= 150)[1] - 1
 Cuando la tasa intrínseca de crecimiento se duplica. ¿Se reduce el tiempo de retorno a la mitad?
 
 ```{r echo=TRUE}
-# Parámetros
-K <- 290
+# Datos del problema
+K <- 300
 N0 <- 10
 N_retorno <- 290
 r_vals <- c(0.2, 0.4, 0.8)
 
-# Constante A del modelo logístico
-A <- (K - N0) / N0
-
-# Función para calcular tiempo de retorno
+# Fórmula del tiempo de retorno
 tiempo_retorno <- function(r) {
-  ( -1 / r ) * log( (K / N_retorno - 1) / A )
+  -(1 / r) * log((K / N_retorno - 1) / ((K - N0) / N0))
 }
 
-# Aplicar a cada r
+# Aplicar a cada valor de r
 tiempos <- sapply(r_vals, tiempo_retorno)
-tiempos
+
+# Mostrar resultados
+data.frame(
+  r = r_vals,
+  tiempo_retorno = round(tiempos, 2)
+)
 
 ```
 
 ## 
 
-10. Con los datos que aparecen por defecto en el modelo de crecimiento dependiente densidad en Populus obtén la curva dN/dt vs. N ¿Qué representa el máximo de la parábola? ¿y los puntos de corte con el eje “X”?
+10\. Con los datos que aparecen por defecto en el modelo de crecimiento dependiente densidad en Populus obtén la curva dN/dt vs. N ¿Qué representa el máximo de la parábola? ¿y los puntos de corte con el eje “X”?
+
+```{r echo=TRUE}
+# Datos del problema
+r <- 0.2
+K <- 500
+
+# Valores posibles de tamaño poblacional
+N <- seq(5, K, by = 1)
+
+# Calcular dN/dt para cada valor de N
+dNdt <- r * N * (1 - N / K)
+
+```
 
 ## 
 
-11. Con los datos que aparecen por defecto en el modelo de crecimiento dependiente densidad en Populus obtén la gráfica dN/(Ndt) vs. N ¿Qué representa la gráfica dN/Ndt vs. N? ¿Qué representa el punto de corte con el eje “Y”? ¿y con el eje “X”?
+```{r echo=TRUE, fig.align='center'}
+# Gráfico
+plot(N, dNdt, type = "l", lwd = 2,
+     xlab = "Tamaño poblacional (N)",
+     ylab = "dN/dt",
+     main = "Crecimiento poblacional frente al tamaño poblacional")
+
+# Añadir líneas de referencia
+abline(v = K/2, lty = 3)
+
+# Añadir marca en K/2
+axis(1, at = K/2, labels = K/2)
+```
 
 ## 
 
-12. Representa la dinámica de una población con capacidad de carga 400 i, y tasa intrínseca de crecimiento per cápita r 0 = 0.1 i/(i t). Considera dos escenarios para el tamaño inicial de la población: N0 =5 y N0 =800. Anota en ambos escenarios el tamaño poblacional para los tiempos t de 5, 20 y 50 y el crecimiento poblacional.
+11\. Con los datos que aparecen por defecto en el modelo de crecimiento dependiente densidad en Populus obtén la gráfica dN/(Ndt) vs. N ¿Qué representa la gráfica dN/Ndt vs. N? ¿Qué representa el punto de corte con el eje “Y”? ¿y con el eje “X”?
+
+```{r echo=TRUE}
+# Datos del problema
+r <- 0.2
+K <- 500
+# Valores posibles de tamaño poblacional
+N <- seq(5, K, by = 1)
+# Calcular crecimiento per cápita
+crecimiento_percapita <- r * (1 - N / K)
+head(crecimiento_percapita)
+```
+
+## 
+
+```{r echo=TRUE, fig.align='center'}
+# Gráfico
+plot(N, crecimiento_percapita, type = "l", lwd = 2,
+     xlab = "Tamaño poblacional (N)", ylab = "dN / (N dt)",
+     main = "Tasa de crecimiento per cápita frente al tamaño poblacional")
+
+# Líneas de referencia
+abline(h = 0, lty = 2)
+abline(v = K, lty = 2)
+abline(h = r, lty = 3)
+```
+
+## 
+
+12\. Representa la dinámica de una población con capacidad de carga 400 i, y tasa intrínseca de crecimiento per cápita r 0 = 0.1 i/(i t). Considera dos escenarios para el tamaño inicial de la población: N0 =5 y N0 =800. Anota en ambos escenarios el tamaño poblacional para los tiempos t de 5, 20 y 50 y el crecimiento poblacional.
 
 | Tiempo | $N_t(N_0=5)$ | $N_t(N_0=800)$ | $\frac{dN}{dt}(N_0=5)$ | $\frac{dN}{dt}(N_0=5)$ |
 |:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
@@ -342,8 +388,71 @@ En valor absoluto, ¿qué es mayor, el crecimiento poblacional cuando el número
 
 ## 
 
-13. Considera una dinámica de crecimiento de una población en la que la tasa intrínseca de crecimiento (r 0 ) es 0.2 i/(it), el tamaño inicial de la población de 10 i y la capacidad de carga de 600 i. Supón que existe un retardo (τ) del efecto de los cambios de densidad poblacional sobre la tasa intrínseca de crecimiento per cápita (r 0) y que este retardo vale 1. Completa la tabla con los rangos que definen tres tipos de crecimiento considerando tres casos:
+```{r echo=TRUE}
+# Datos del problema
+K <- 400
+r <- 0.1
+tiempos <- c(5, 20, 50)
 
+# Función del modelo logístico continuo
+logistica <- function(t, N0, K, r) {
+  K / (1 + ((K - N0) / N0) * exp(-r * t))
+}
+
+# Función para calcular dN/dt
+dNdt <- function(N, K, r) {
+  r * N * (1 - N / K)
+}
+```
+
+## 
+
+```{r echo=TRUE}
+# Escenario 1: N0 = 5
+Nt_5 <- logistica(tiempos, 5, K, r)
+crec_5 <- dNdt(Nt_5, K, r)
+
+# Escenario 2: N0 = 800
+Nt_800 <- logistica(tiempos, 800, K, r)
+crec_800 <- dNdt(Nt_800, K, r)
+
+# Tabla de resultados
+resultado <- data.frame(
+  Tiempo = tiempos,
+  Nt_N0_5 = round(Nt_5, 2),
+  Nt_N0_800 = round(Nt_800, 2),
+  dNdt_N0_5 = round(crec_5, 2),
+  dNdt_N0_800 = round(crec_800, 2)
+)
+
+resultado
+```
+
+## 
+
+```{r echo=TRUE, fig.align='center'}
+# Secuencia temporal para curvas suaves
+t <- seq(0, 50, by = 0.1)
+# Curvas poblacionales
+N_5 <- logistica(t, 5, K, r)
+N_800 <- logistica(t, 800, K, r)
+# Gráfico
+plot(t, N_5, type = "l", lwd = 2, ylim = c(0, 820),
+     xlab = "Tiempo", ylab = "Tamaño poblacional",
+     main = "Dinámica logística para dos tamaños iniciales")
+
+lines(t, N_800, lwd = 2, lty = 2)
+abline(h = K, lty = 3)
+
+legend("topright",
+       legend = c("N0 = 5", "N0 = 800", "K = 400"),
+       lwd = c(2, 2, 1),
+       lty = c(1, 2, 3))
+```
+
+## 
+
+13\. Considera una dinámica de crecimiento de una población en la que la tasa intrínseca de crecimiento (r 0 ) es 0.2 i/(it), el tamaño inicial de la población de 10 i y la capacidad de carga de 600 i. Supón que existe un retardo (τ) del efecto de los cambios de densidad poblacional sobre la tasa intrínseca de crecimiento per cápita (r 0) y que este retardo vale 1. Completa la tabla con los rangos que definen tres tipos de crecimiento considerando tres casos:
 
 a)  Se mantiene ese τ, pero se van incrementando los valores de r 0
 b)  Se mantiene esa r 0 , se van incrementando los valores de τ
@@ -363,3 +472,324 @@ c)  Se modifican ambos parámetros
 | sin oscilación          |          |
 | oscilación amortiguada  |          |
 | oscilación cíclica      |          |
+
+::: {.callout-tip title="Modelo logístico discreto"}
+$N_{(t+1)}=N_t+rN_t(1-\frac{N_t}{K})$
+:::
+
+## 
+
+```{r}
+modelo_retardo <- function(r, tau, K, N0, tiempo_max = 100) {
+  
+  N <- numeric(tiempo_max + 1)
+  N[1] <- N0
+  
+  for (t in 1:tiempo_max) {
+    
+    if (t <= tau) {
+      N_pasado <- N0
+    } else {
+      N_pasado <- N[t - tau]
+    }
+    
+    N[t + 1] <- N[t] + r * N[t] * (1 - N_pasado / K)
+  }
+  
+  return(N)
+}
+```
+
+## 
+
+```{r}
+# Parámetros
+K <- 600
+N0 <- 10
+tau <- 1
+tiempo <- 0:100
+
+r_vals <- c(0.2, 0.8, 1)
+
+# Simulación
+N_mat <- sapply(r_vals, function(r) {
+  modelo_retardo(r, tau, K, N0)
+})
+
+# Gráfico limpio
+matplot(tiempo, N_mat, type = "l", lwd = 3, lty = 1,
+        xlab = "Tiempo",
+        ylab = "Tamaño poblacional",
+        main = "Efecto de r con retardo (τ = 1)")
+
+# Capacidad de carga
+abline(h = K, lty = 2, lwd = 2)
+
+# Leyenda clara
+legend("bottomright",
+       legend = c("r = 0.2 (sin oscilación)",
+                  "r = 0.8 (amortiguada)",
+                  "r = 1 (cíclica)"),
+       col = 1:3,
+       lwd = 3,
+       bty = "n")
+```
+
+```{r}
+# Parámetros
+r <- 0.4
+tau_vals <- c(1, 2, 3)
+
+# Simulación
+N_mat <- sapply(tau_vals, function(tau) {
+  modelo_retardo(r, tau, K, N0)
+})
+
+# Gráfico
+matplot(tiempo, N_mat, type = "l", lwd = 3, lty = 1,
+        xlab = "Tiempo",
+        ylab = "Tamaño poblacional",
+        main = "Efecto del retardo (τ)")
+
+abline(h = K, lty = 2, lwd = 2)
+
+legend("right",
+       legend = c("τ = 1", "τ = 2", "τ = 3"),
+       col = 1:3,
+       lwd = 3,
+       bty = "n")
+```
+
+```{r}
+par(mfrow = c(1, 3))  # 3 gráficos en fila
+
+r_vals <- c(0.2, 0.8, 1)
+titulos <- c("Sin oscilación", "Amortiguada", "Cíclica")
+
+for (i in 1:3) {
+  
+  N <- modelo_retardo(r_vals[i], 1, K, N0)
+  
+  plot(tiempo, N, type = "l", lwd = 3,
+       xlab = "Tiempo",
+       ylab = "N",
+       main = titulos[i])
+  
+  abline(h = K, lty = 2)
+}
+```
+
+## Anexo: Cómo funciona R?
+
+-   Al introducir valores en RStudio, podemos darle al Tabulador para que nos recomiende posibles valores, y luego enter para que autocomplete el correcto.
+
+-   **help(nombre_de_la_funcion)**: Nos enseña la documentación para esa función.
+
+-   **?nombre_de_la_funcion**: Lo mismo que help(nombre_de_la_funcion)
+
+-   **c()**: Se usa para crear un nuevo vector concatenando los valores que se introduzcan. Ejemplo de vector:
+
+```{r}
+c(1, 2, "Alberto", 1.3)
+```
+
+-   **Dataframe**: es un tipo de estructura de datos que organiza la información de forma tabular. Ejemplo de dataframe:
+
+```{r}
+dataframe <- data.frame(   
+  Nombre = c("Alberto", "Santiago", "Elena"),   
+  Ciudades = c("Madrid", "Barcelona", "Segovia"),   
+  Colores = c("Azul", "Verde", "Amarillo"),   
+  Números = c(1, 2, 3)   ) 
+dataframe
+```
+
+Los Dataframes pueden tener nombres de filas
+
+```{r}
+dataframe2 <- data.frame(   
+  row.names = c("persona1", "persona2", "persona3"),   
+  Nombre = c("Alberto", "Santiago", "Elena"),   
+  Ciudades = c("Madrid", "Barcelona", "Segovia"),   
+  Colores = c("Azul", "Verde", "Amarillo"),   
+  Números = c(1, 2, 3)   ) 
+dataframe2
+```
+
+NOTA: para acceder a las columnas de un dataframe, podemos usar el símbolo del dólar (\$). Ejemplo:
+
+```{r}
+dataframe2$Colores
+```
+
+-   **Matrix**: Las matrices son similares a los dataframes, pero TODAS las columnas tienen que ser del mismo tipo de datos (por ejemplo, todas numéricas, o todas caracteres). Hay tests que requieren matrices en vez de dataframes.
+
+```{r}
+# Crea una matriz 3x3 con los números del 1 al 9, rellenados por filas
+m <- matrix(1:9, nrow = 3, ncol = 3, byrow = TRUE) 
+m
+```
+
+```{r}
+# Crea una matriz 3x3 con los números del 1 al 9, rellenados por columnas
+m2 <- matrix(1:9, nrow = 3, ncol = 3, byrow = FALSE) 
+m2
+```
+
+## Anexo: Qué hacen las funciones que hemos usado?
+
+-   **install.packages**: Instala paquetes a nuestro R local. Solo es necesario instalar cada paquete una vez, y se quedará en nuestro ordenador para siempre.
+
+-   **library**: Le indica a R que queremos usar uno de los paquetes que hemos instalado. Esto sí que se tiene que ejecutar cada vez que abramos RStudio.
+
+-   **log:** Calcula el logaritmo natural con base $e$ (logaritmo neperiano).
+
+-   **exp:** Calcula la función exponencial.
+
+-   **seq:** Genera secuencias numéricas. Algunos parámetros que usaremos son::
+
+    -   from: el valor del comienzo de la secuencia.
+
+    -   to: el valor del final de la secuencia.
+
+    -   by: el incremento de la secuencia.
+
+    Nota: al usar seq(0, 5 ,by= 0.1) estamos pasando los argumentos en orden seq(from, to, by)
+
+    ```{r}
+    seq(0, 5, by= 0.1)
+    ```
+
+-   **plot:** Función genérica para hacer gráficos de objetos de R. Algunos parámetros que usaremos son::
+
+    -   x: coordenadas de los puntos en el gráfico.
+
+    -   y: coordenadas y de los puntos del gráfico.
+
+    -   type: qué tipo de gráfico crear. Opciones más relevantes:
+
+        -   "p": puntos
+
+        -   "l": líneas
+
+        -   "b": ambos (puntos y líneas)
+
+        -   "h". histograma
+
+        -   "s": escalonado.
+
+    -   main: título del gráfico-
+
+    -   xlab: título para el eje x
+
+    -   ylab: título para el eje y
+
+    -   lwd: grosor de la línea
+
+    -   col: colores de los puntos. Se puede definir con números o nombres (por ejemplo col: c("yellow", "blue")
+
+    -   pch: tipo de punto. Mirar documentación de points para ver todas las opciones
+
+        \
+        ![](images/clipboard-2939216878.png){width="994"}
+
+```{r}
+plot(c(1,2,3), c(2,3,4), type="b", main="Cómo hacer gráficos", xlab="Eje X", ylab="Eje Y", pch=9, lwd=1, col=1:3)
+```
+
+-   **legend:** Añade una leyenda al gráfico. Algunos parámetros que usaremos son::
+
+    -   x,y: coordenadas donde colocar la leyenda. También se pueden usar palabras clave como "topright", "bottomleft" etc.
+
+    -   legend: vector con el contenido de la leyenda
+
+    -   col: colores para los distintos componentes de la leyenda
+
+    ```{r}
+    plot(c(1,2,3), c(2,3,4), type="b", main="Cómo hacer gráficos", xlab="Eje X", ylab="Eje Y", pch=9, lwd=1, col=1:3)
+    legend("topleft", c("a=1", "b=2", "c=3"), pch=9, col=1:3)
+    ```
+
+-   **abline:** Dibuja una línea recta en el gráfico. Algunos parámetros que usaremos son::
+
+    -   a,b: el intercepto y la pendiente
+
+    -   h: para líneas horizontales, valor de la y
+
+    -   v: para líneas verticales, valor de la x
+
+    -   col: color de la línea
+
+```{r}
+plot(c(1,2,3), c(2,3,4), type="b", main="Cómo hacer gráficos", xlab="Eje X", ylab="Eje Y", pch=9, lwd=1, col=1:3)
+legend("topleft", c("a=1", "b=2", "c=3"), pch=9, col=1:3)
+abline(h=2.5, col="blue")
+```
+
+-   **matplot:** igual que plot, pero para añadir más de un gráfico a la vez.
+
+-   **sapply:** aplica una función a ciertos elementos de un objeto. Algunos parámetros que usaremos son::
+
+    -   X: un vector
+
+    -   FUN: la función que aplicar a cada elemento de X.
+
+```{r}
+#función que genera secuencias numéricas desde 0 hasta un número en incrementos de 1
+sapply(c(1,4,7), function(numero){seq(from=0,to=numero, by=1)})
+```
+
+-   **head:** muestra el principio de un vector, matriz, tabla, dataframe o función. tail() hace lo opuesto (muestra el final)
+
+```{r}
+#generamos una secuencia entre 0 y 1000000 y visualizamos los 6 primeros elementos
+grande = seq(0,1000000, by=1)
+head(grande)
+```
+
+```{r}
+#generamos una secuencia entre 0 y 1000000 y visualizamos los 6 últimos elementos
+grande = seq(0,1000000, by=1)
+tail(grande)
+```
+
+-   **function:** define una nueva función. Algunos parámetros que usaremos son::
+
+    -   arglist: vacío o uno o más argumentos que tendrá la función. Si se añade por ejemplo number=0, se define el valor por defecto si no se incluye ningún argumento en la llamada a la función.
+
+    -   expr: una expresión.
+
+```{r}
+#definimos una función que divide un numerador por el logaritmo de un número
+dividir_logaritmo <- function(numerador, logaritmo){numerador/log(logaritmo)}
+dividir_logaritmo(10, 87)
+```
+
+-   **data.frame:** crea un dataframe nuevo. Algunos parámetros que usaremos son:
+
+    -   row.names = establece los nombres de las líneas.
+
+    -   Nombre_columna = valores columna
+
+IMPORTANTE: todas las columnas tienen que tener el mismo número de elementos (si tienen distinto número de elementos es mejor usar una matriz)
+
+```{r}
+dataframe2 <- data.frame(   
+  row.names = c("persona1", "persona2", "persona3"),   
+  Nombre = c("Alberto", "Santiago", "Elena"),   
+  Ciudades = c("Madrid", "Barcelona", "Segovia"),   
+  Colores = c("Azul", "Verde", "Amarillo"),   
+  Números = c(1, 2, 3)   ) 
+dataframe2
+```
+
+-   **round:** redondea un valor.
+
+```{r}
+round(1.4)
+```
+
+```{r}
+#aplicamos round() a 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 y 1
+sapply(seq(0,1,by=0.1), function(numero)round(numero))
+```
