@@ -10,8 +10,21 @@ format:
 
 ## 
 
+Conceptos base:
+
+- $S$: número de individuos en la población. En la práctica anterior lo llamábamos $N$
+- $b$: número de nacimientos
+- $l$: tasa de supervivencia. Ratio de individuos que hay en cada momento con respecto a cuántos había en el tiempo 0 ($S_0$). Se calcula con $\frac{S_1}{S_0}$
+- $m$: tasa de fecundidad: ratio de nacimientos nuevos con respecto a los individuos que hay en esa etapa. Se calcula con $\frac{b_1}{S_1}$
+
+## 
+
 1.  En una población estructurada, se sabe que cada una de sus cohortes evoluciona según la siguiente tabla de vida ($l_x$, tasa de supervivencia hasta el tiempo $x$, y $m_x$, tasa reproductiva en tiempo x):
 
+## 
+
+:::::::: columns
+::::::: column
 |  x  | $l_x$ | $m_x(= b_x)$ |
 |:---:|:-----:|:------------:|
 |  0  |   1   |      0       |
@@ -20,46 +33,172 @@ format:
 |  3  |  0.1  |     0.4      |
 |  4  |   0   |      0       |
 
+::: column
+```{r echo=TRUE}
+# -----------------------------
+# TABLA DE VIDA
+# -----------------------------
+lx <- c(1, 0.6, 0.3, 0.1, 0)
+mx <- c(0, 1.2, 2.9, 0.4, 0)
+
+# Probabilidades de supervivencia entre clases
+S0 <- lx[2]/lx[1]   # de CE0 a CE1
+S1 <- lx[3]/lx[2]   # de CE1 a CE2
+S2 <- lx[4]/lx[3]   # de CE2 a CE3
+
+# Cohorte inicial
+n0 <- c(100,0,0,0)
+```
+:::
+
+## 
+
 Considerando esa información y también que el tamaño inicial de la primera cohorte es de 100 individuos, y que los nacimientos entre los tiempos x-1 y x se producen de forma sincronizada en x y justo antes de hacer el censo poblacional:
+
+## 
 
 a)  Completa la siguiente tabla sobre la dinámica poblacional con el número de individuos que corresponden a distintas clases etarias en distintos momentos:
 
-+------------+--------------------+--------------------+--------------------+
-|            | Población en $x=0$ | Población en $x=1$ | Población en $x=2$ |
-|            |                    |                    |                    |
-|            | \(S\)              | \(S\)              | \(S\)              |
-+============+====================+====================+====================+
-| **CE0**    | 100                |                    |                    |
-+------------+--------------------+--------------------+--------------------+
-| **CE1**    | 0                  |                    |                    |
-+------------+--------------------+--------------------+--------------------+
-| **CE2**    | 0                  |                    |                    |
-+------------+--------------------+--------------------+--------------------+
-| **CE3**    | 0                  |                    |                    |
-+------------+--------------------+--------------------+--------------------+
-| **N**      | 100                |                    |                    |
-+------------+--------------------+--------------------+--------------------+
++---------+--------------------+--------------------+--------------------+
+|         | Población en $x=0$ | Población en $x=1$ | Población en $x=2$ |
+|         |                    |                    |                    |
+|         | \(S\)              | \(S\)              | \(S\)              |
++=========+====================+====================+====================+
+| **CE0** | 100                |                    |                    |
++---------+--------------------+--------------------+--------------------+
+| **CE1** | 0                  |                    |                    |
++---------+--------------------+--------------------+--------------------+
+| **CE2** | 0                  |                    |                    |
++---------+--------------------+--------------------+--------------------+
+| **CE3** | 0                  |                    |                    |
++---------+--------------------+--------------------+--------------------+
+| **N**   | 100                |                    |                    |
++---------+--------------------+--------------------+--------------------+
 
-b) determina gráficamente la proporción de individuos de cada clase etaria que existen en la población cuando, pasado suficiente tiempo, se estabilizan esas proporciones
+## 
 
-c) cuando la distribución de edades se estabiliza, ¿el tamaño de la población disminuye, aumenta o permanece constante con el tiempo? (responde analizando la curva N vs t)
+```{r echo=TRUE}
+# Número de censos
+tiempos <- 25
 
-d) ¿cuál es el número de individuos producido por cada individuo en una cohorte a lo largo de toda su vida?
+# Tabla de proyección poblacional
+pop <- matrix(0, nrow=4, ncol=tiempos)
+rownames(pop) <- c("CE0","CE1","CE2","CE3")
+colnames(pop) <- paste0("t",0:(tiempos-1))
 
-e) ¿Corrobora la tasa calculada en d) la respuesta a la pregunta c)?
+# Cohorte inicial
+pop[,1] <- c(100,0,0,0)
 
-f) ¿Cuál será la edad media a la que un individuo tiene descendencia?
+# Simulación tipo Populus
+for(t in 2:tiempos){
 
-g) si se cambian los valores de las tasas reproducvitvas específicas de edad de la tabla inicial por: $m_1=0.4$, $m_2 = 1.2$ y $m_3 = 2.9$, ¿cuál será ahora el valor de la tasa calculada en d)?
+  # Supervivencia y envejecimiento
+  CE1 <- pop[1,t-1] * S0
+  CE2 <- pop[2,t-1] * S1
+  CE3 <- pop[3,t-1] * S2
 
-h) Hay dos maneras de estimar la tasa de crecimiento ($r$) de una población a partir de la información contenida en una tabla de vida. El primero consiste en utilizar la ecuación de Euler-Lotka:
-PONER ECUACIÓN
-1   e-rx lx mx  
+  # Nacimientos
+  CE0 <- CE1*mx[2] + CE2*mx[3] + CE3*mx[4]
 
-que da un valor exacto de r por aproximaciones sucesivas. El segundo método, más sencillo pero menos preciso, implica estimar r como: 
+  # Guardar
+  pop[,t] <- c(CE0, CE1, CE2, CE3)
+}
 
-r  ln (R0/G) 
+# Tamaño total S en cada tiempo
+S_total <- colSums(pop)
+pop[,1:3]
+```
 
-Calcula de ambas formas la tasa de crecimiento poblacional. 
+```{r echo = TRUE}
+S_total[1:3]
+```
 
-Nota: G=Tc (tiempo de generación de una cohorte) 
+b)  determina gráficamente la proporción de individuos de cada clase etaria que existen en la población cuando, pasado suficiente tiempo, se estabilizan esas proporciones
+
+::: {.callout-tip title="Proporción individuos por clase etaria"}
+$P = \frac{S_x}{\sum S_x}$
+:::
+
+```{r echo = TRUE}
+# Proporciones de cada clase
+prop <- pop / rep(S_total, each=4)
+
+# Gráfico de proporciones
+matplot(t(prop), type="l", lwd=2,
+        xlab="Tiempo",
+        ylab="Proporción Sx / S")
+
+legend("right",
+       legend=c("CE0","CE1","CE2","CE3"),
+       lty=1, col=1:4)
+```
+
+```{r echo = TRUE}
+prop[,25]
+```
+
+c)  cuando la distribución de edades se estabiliza, ¿el tamaño de la población disminuye, aumenta o permanece constante con el tiempo? (responde analizando la curva N vs t)
+
+```{r echo = TRUE}
+plot(S_total, type="l", lwd=2,
+     xlab="Tiempo",
+     ylab="Tamaño poblacional S")
+```
+
+d)  ¿cuál es el número de individuos producido por cada individuo en una cohorte a lo largo de toda su vida?
+
+::: {.callout-tip title="R0"}
+$R_0 = \sum l_xm_x$
+:::
+
+```{r echo = TRUE}
+R0 <- sum(lx * mx)
+R0
+```
+
+e)  ¿Corrobora la tasa calculada en d) la respuesta a la pregunta c)?
+
+```{r echo = TRUE}
+if(R0 > 1){
+  print("Sí, la población crece porque cada individuo deja más de un descendiente.")
+}
+```
+
+f)  ¿Cuál será la edad media a la que un individuo tiene descendencia?
+
+::: {.callout-tip title="Tiempo de generación"}
+$T_c = \frac{\sum xl_xm_x}{\sum l_xm_x}$
+:::
+
+```{r echo = TRUE}
+x <- 0:4
+
+Tc <- sum(x * lx * mx) / sum(lx * mx)
+Tc
+```
+
+g)  si se cambian los valores de las tasas reproducvitvas específicas de edad de la tabla inicial por: $m_1=0.4$, $m_2 = 1.2$ y $m_3 = 2.9$, ¿cuál será ahora el valor de la tasa calculada en d)?
+
+```{r echo = TRUE}
+mx2 <- c(0, 0.4, 1.2, 2.9, 0)
+
+R0_nuevo <- sum(lx * mx2)
+R0_nuevo
+```
+
+```{r echo = TRUE}
+r_aprox <- log(R0_nuevo) / Tc
+r_aprox
+```
+
+h)  Hay dos maneras de estimar la tasa de crecimiento ($r$) de una población a partir de la información contenida en una tabla de vida. El primero consiste en utilizar la ecuación de Euler-Lotka: PONER ECUACIÓN 1   e-rx lx mx
+
+que da un valor exacto de r por aproximaciones sucesivas. El segundo método, más sencillo pero menos preciso, implica estimar r como:
+
+r  ln (R0/G)
+
+Calcula de ambas formas la tasa de crecimiento poblacional.
+
+Nota: G=Tc (tiempo de generación de una cohorte)
+:::::::
+::::::::
